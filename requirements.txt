@@ -2,3 +2,4 @@ streamlit
 nltk
 gtts
 SpeechRecognition
+openai
