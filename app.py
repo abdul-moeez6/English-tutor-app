@@ -99,6 +99,36 @@ html, body, [class*="css"], .stApp {
 }
 hr { border-color:#b2dfdb!important; }
 .stAlert { border-radius:12px!important; }
+
+
+.stTextArea textarea,
+.stTextArea textarea:focus,
+.stTextArea textarea:focus-visible,
+.stTextArea textarea:active {
+    outline: none !important;
+    box-shadow: none !important;
+    border: 2px solid #009688 !important;  /* keep your green */
+}
+
+/* 🔥 Override Streamlit wrapper */
+[data-testid="stTextArea"] textarea {
+    outline: none !important;
+    box-shadow: none !important;
+    border: 2px solid #009688 !important;
+}
+
+/* 🔥 Kill browser mobile highlight */
+* {
+    -webkit-tap-highlight-color: transparent !important;
+}
+
+/* 🔥 Extra safety (validation states) */
+textarea:invalid,
+textarea:required {
+    outline: none !important;
+    box-shadow: none !important;
+    border: 2px solid #009688 !important;
+}
 </style>
 """, unsafe_allow_html=True)
 
