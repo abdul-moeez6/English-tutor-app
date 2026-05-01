@@ -399,10 +399,7 @@ def build_sentence_html(idx, sentence, tags, palette, urdu_sentence, urdu_words)
         height: h
       }}, "*");
     }}
-    setTimeout(reportHeight, 50);
-    setTimeout(reportHeight, 250);
-    setTimeout(reportHeight, 600);
-    setTimeout(reportHeight, 1200);
+    setTimeout(reportHeight, 100);
     window.addEventListener("load", reportHeight);
     window.addEventListener("resize", reportHeight);
     new ResizeObserver(reportHeight).observe(document.querySelector('.block') || document.body);
@@ -413,11 +410,7 @@ def build_sentence_html(idx, sentence, tags, palette, urdu_sentence, urdu_words)
 
 # ── FIX 4: ACCURATE INITIAL HEIGHT (3-col assumption on wide layout) ─────────
 def iframe_height(word_count):
-    # Use WORST CASE = 1 column (mobile screen).
-    # Each card ~200px tall (title + role + what is + urdu row).
-    # JS will measure true height via offsetHeight and SHRINK this on desktop.
-    # This guarantees zero cropping on any device or sentence length.
-    return 60 + 50 + 70 + word_count * 200 + 80
+    return 300
 
 
 # ── INPUT SECTION ─────────────────────────────────────────────────────────────
