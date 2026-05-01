@@ -335,16 +335,18 @@ def build_sentence_html(idx, sentence, tags, palette, urdu_sentence, urdu_words)
 
   <script>
     function reportHeight() {{
-      const h = document.body.scrollHeight + 20;
+      const h = document.body.scrollHeight + 40;
       window.parent.postMessage({{
         isStreamlitMessage: true,
         type: "streamlit:setFrameHeight",
         height: h
       }}, "*");
     }}
-
+    setTimeout(reportHeight, 50);
+    setTimeout(reportHeight, 200);
+    setTimeout(reportHeight, 500);
     window.addEventListener("load", reportHeight);
-    setTimeout(reportHeight, 100);
+    window.addEventListener("resize", reportHeight);
     new ResizeObserver(reportHeight).observe(document.body);
   </script>
 </body>
@@ -444,7 +446,7 @@ if analyze:
             continue
 
         block_html = build_sentence_html(i, sentence, tags, PALETTE, urdu_sentence, urdu_words)
-        components.html(block_html, height=100, scrolling=False)
+        components.html(block_html, height=600, scrolling=False)
 
         for w, t in real:
             pos_name, _ = explain_pos(t)
