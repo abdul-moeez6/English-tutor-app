@@ -284,7 +284,7 @@ def build_sentence_html(idx, sentence, tags, palette, urdu_sentence, urdu_words)
       <span class="sent-num">Sentence {idx+1}</span>
       <span class="sent-wcount">{len(real_pairs)} words</span>
     </div>
-    <div class="sent-text">{html.escape(sentence)}</div> <div class="sent-urdu">اردو: {html.escape(urdu_sentence)}<br></div>
+    <div class="sent-text">{html.escape(sentence)}</div> <div class="sent-urdu">اردو: {html.escape(urdu_sentence)}</div>
     <div class="grid">{cards}</div>
   </div>
   <script>
