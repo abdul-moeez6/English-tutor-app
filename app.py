@@ -214,134 +214,195 @@ def build_sentence_html(idx, sentence, tags, palette, urdu_sentence, urdu_words)
           <div class="wdetail"><span class="lbl">What is a {html.escape(pos_name)}?</span> {html.escape(pos_desc)}</div>
           <div class="wdetail urdu-word"><span class="lbl">اردو:</span> <span class="urdu-text">{html.escape(urdu_word)}</span></div>
         </div>"""
-
     return f"""<!DOCTYPE html>
 <html>
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<!-- Nunito for English, Noto Nastaliq Urdu for Urdu text -->
 <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Noto+Nastaliq+Urdu:wght@400;600;700&display=swap" rel="stylesheet">
+
 <style>
-  * { box-sizing:border-box; margin:0; padding:0; font-family:'Nunito',sans-serif; }
-  body { background:transparent; padding:4px 2px 12px 2px; overflow:visible; }
+* {{ box-sizing:border-box; margin:0; padding:0; font-family:'Nunito',sans-serif; }}
+body {{ background:transparent; padding:4px 2px 12px 2px; overflow:visible; }}
 
-  .block {
-    background:linear-gradient(135deg,{g1},{g2});
-    border-left:5px solid {border};
-    border-radius:18px; padding:16px 18px;
-    box-shadow:0 4px 16px {border}33;
-    width:100%; max-width:2000px; overflow:visible;
-  }
-  .sent-hdr {
-    display:flex; align-items:center; gap:10px; margin-bottom:10px;
-  }
-  .sent-num {
-    background:{border}; color:#fff;
-    font-size:12px; font-weight:900;
-    border-radius:20px; padding:3px 12px; white-space:nowrap;
-  }
-  .sent-wcount { font-size:12px; color:#555; font-weight:600; }
+.block {{
+  background:linear-gradient(135deg,{g1},{g2});
+  border-left:5px solid {border};
+  border-radius:18px;
+  padding:16px 18px;
+  box-shadow:0 4px 16px {border}33;
+  width:100%;
+  max-width:2000px;
+  overflow:visible;
+}}
 
-  .sent-text {
-    font-size:15px; font-style:italic; color:#263238;
-    background:rgba(255,255,255,.55);
-    border-radius:10px 10px 0 0; padding:9px 14px;
-    line-height:1.6; word-break:break-word;
-  }
-  .sent-urdu {
-    background:rgba(255,255,255,.38);
-    border-radius:0 0 10px 10px;
-    padding:8px 14px 10px 14px;
-    margin-bottom:14px;
-    border-top:1px dashed rgba(0,0,0,.12);
-    text-align:right; direction:rtl;
-  }
-  .urdu-label {
-    font-size:11px; font-weight:700; color:#555;
-    font-family:'Nunito',sans-serif;
-    direction:ltr; display:inline-block; margin-left:6px; vertical-align:middle;
-  }
-  .urdu-sentence-text {
-    font-family:'Noto Nastaliq Urdu', serif;
-    font-size:17px; font-weight:600; color:#1a1a2e;
-    line-height:2; display:block; margin-top:2px;
-  }
+.sent-hdr {{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  margin-bottom:10px;
+}}
 
-  /* ── MOBILE-SAFE GRID ── */
-  .grid {
-    display:grid;
-    grid-template-columns: repeat(auto-fill, minmax(min(210px, 100%), 1fr));
-    gap:8px;
-  }
+.sent-num {{
+  background:{border};
+  color:#fff;
+  font-size:12px;
+  font-weight:900;
+  border-radius:20px;
+  padding:3px 12px;
+  white-space:nowrap;
+}}
 
-  .wcard {
-    background:rgba(255,255,255,.85);
-    border:1.5px solid rgba(0,0,0,.07);
-    border-radius:12px; padding:10px 13px;
-    word-break:break-word;
-    /* Let card grow with its content — no fixed height */
-    height:auto; min-height:0;
-  }
-  .wcard-top {
-    display:flex; align-items:flex-start;
-    flex-wrap:wrap; gap:6px; margin-bottom:5px;
-  }
-  .wtitle { font-size:19px; font-weight:900; color:#1a1a2e; word-break:break-word; }
-  .badge {
-    background:{badge_bg}; color:#fff;
-    border-radius:20px; padding:2px 10px;
-    font-size:11px; font-weight:700; white-space:nowrap; margin-top:3px;
-  }
-  .wdetail { font-size:12px; color:#455a64; line-height:1.6; margin-top:3px; }
-  .lbl { font-weight:800; color:#263238; }
+.sent-wcount {{
+  font-size:12px;
+  color:#555;
+  font-weight:600;
+}}
 
-  .urdu-word {
-    direction:rtl; text-align:right;
-    border-top:1px dashed rgba(0,0,0,.1);
-    margin-top:5px; padding-top:4px;
-  }
-  .urdu-text {
-    font-family:'Noto Nastaliq Urdu', serif;
-    font-size:15px; font-weight:600; color:#1a1a2e; line-height:2;
-  }
+.sent-text {{
+  font-size:15px;
+  font-style:italic;
+  color:#263238;
+  background:rgba(255,255,255,.55);
+  border-radius:10px 10px 0 0;
+  padding:9px 14px;
+  line-height:1.6;
+  word-break:break-word;
+}}
+
+.sent-urdu {{
+  background:rgba(255,255,255,.38);
+  border-radius:0 0 10px 10px;
+  padding:8px 14px 10px 14px;
+  margin-bottom:14px;
+  border-top:1px dashed rgba(0,0,0,.12);
+  text-align:right;
+  direction:rtl;
+}}
+
+.urdu-label {{
+  font-size:11px;
+  font-weight:700;
+  color:#555;
+  direction:ltr;
+  display:inline-block;
+  margin-left:6px;
+}}
+
+.urdu-sentence-text {{
+  font-family:'Noto Nastaliq Urdu', serif;
+  font-size:17px;
+  font-weight:600;
+  color:#1a1a2e;
+  line-height:2;
+  display:block;
+  margin-top:2px;
+}}
+
+.grid {{
+  display:grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(210px, 100%), 1fr));
+  gap:8px;
+}}
+
+.wcard {{
+  background:rgba(255,255,255,.85);
+  border:1.5px solid rgba(0,0,0,.07);
+  border-radius:12px;
+  padding:10px 13px;
+  word-break:break-word;
+  height:auto;
+}}
+
+.wcard-top {{
+  display:flex;
+  align-items:flex-start;
+  flex-wrap:wrap;
+  gap:6px;
+  margin-bottom:5px;
+}}
+
+.wtitle {{
+  font-size:19px;
+  font-weight:900;
+  color:#1a1a2e;
+}}
+
+.badge {{
+  background:{badge_bg};
+  color:#fff;
+  border-radius:20px;
+  padding:2px 10px;
+  font-size:11px;
+  font-weight:700;
+  white-space:nowrap;
+}}
+
+.wdetail {{
+  font-size:12px;
+  color:#455a64;
+  line-height:1.6;
+  margin-top:3px;
+}}
+
+.lbl {{
+  font-weight:800;
+  color:#263238;
+}}
+
+.urdu-word {{
+  direction:rtl;
+  text-align:right;
+  border-top:1px dashed rgba(0,0,0,.1);
+  margin-top:5px;
+  padding-top:4px;
+}}
+
+.urdu-text {{
+  font-family:'Noto Nastaliq Urdu', serif;
+  font-size:15px;
+  font-weight:600;
+  line-height:2;
+}}
 </style>
 </head>
+
 <body>
-  <div class="block">
-    <div class="sent-hdr">
-      <span class="sent-num">Sentence {idx+1}</span>
-      <span class="sent-wcount">{len(real_pairs)} words</span>
-    </div>
+<div class="block">
 
-    <!-- English sentence -->
-    <div class="sent-text">{html.escape(sentence)}</div>
-
-    <!-- Urdu translation — separated by dashed line, right-aligned Nastaliq -->
-    <div class="sent-urdu">
-      <span class="urdu-label">Translation:</span>
-      <span class="urdu-sentence-text">{html.escape(urdu_sentence)}</span>
-    </div>
-
-    <div class="grid">{cards}</div>
+  <div class="sent-hdr">
+    <span class="sent-num">Sentence {idx+1}</span>
+    <span class="sent-wcount">{len(real_pairs)} words</span>
   </div>
 
-  <script>
-  function reportHeight() {
-    const h = Math.min(2000, document.body.scrollHeight + 60);
-    window.parent.postMessage({
-      isStreamlitMessage: true,
-      type: "streamlit:setFrameHeight",
-      height: h
-    }, "*");
-  }
-  // Fire immediately and at multiple delays to catch font/image load latency
-  reportHeight();
-  [50, 150, 300, 600, 1200].forEach(ms => setTimeout(reportHeight, ms));
-  window.addEventListener("load", reportHeight);
-  window.addEventListener("resize", reportHeight);
-  new ResizeObserver(reportHeight).observe(document.body);
+  <div class="sent-text">{html.escape(sentence)}</div>
+
+  <div class="sent-urdu">
+    <span class="urdu-label">Translation:</span>
+    <span class="urdu-sentence-text">{html.escape(urdu_sentence)}</span>
+  </div>
+
+  <div class="grid">{cards}</div>
+
+</div>
+
+<script>
+function reportHeight() {{
+  const h = Math.min(2000, document.body.scrollHeight + 60);
+  window.parent.postMessage({{
+    isStreamlitMessage: true,
+    type: "streamlit:setFrameHeight",
+    height: h
+  }}, "*");
+}}
+
+reportHeight();
+[50,150,300,600,1200].forEach(ms => setTimeout(reportHeight, ms));
+window.addEventListener("load", reportHeight);
+window.addEventListener("resize", reportHeight);
+new ResizeObserver(reportHeight).observe(document.body);
 </script>
+
 </body>
 </html>"""
 
