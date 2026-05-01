@@ -422,11 +422,8 @@ analyze = False
 if st.button("Analyze My Sentences!", use_container_width=True):
     analyze = True
 
-fix_text = False
 if st.button("Fix Grammar & Spelling", use_container_width=True):
-    fix_text = True
 
-    if fix_text:
     raw_text = st.session_state.get('input_text', '').strip()
 
     if not raw_text:
