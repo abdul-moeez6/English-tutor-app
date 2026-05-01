@@ -143,11 +143,11 @@ POS = {
 PUNCT = set('.,!?;:\'"()[]{}…–—``\'\'""')
 
 PALETTE = [
-    ('#26c6a2','#d0f5ec','#f0fff8','#00796b'),
-    ('#ffa726','#fff3e0','#fffde7',"#ff8902"),
-    ('#42a5f5','#dceefb','#f0f8ff','#1565c0'),
-    ('#ab47bc','#ede7f6','#faf5ff','#7b1fa2'),
     ('#e57373','#ffe8e8','#fff5f5','#c0392b'),
+    ('#42a5f5','#dceefb','#f0f8ff','#1565c0'),
+    ('#26c6a2','#d0f5ec','#f0fff8','#00796b'),
+    ('#ab47bc','#ede7f6','#faf5ff','#7b1fa2'),
+    ('#ffa726','#fff3e0','#fffde7','#e65100'),
 ]
 
 # ── HELPERS ──────────────────────────────────────────────────────────────────
@@ -325,7 +325,7 @@ def build_sentence_html(idx, sentence, tags, palette, urdu_sentence, urdu_words)
   /* ISSUE 2 FIX: auto-fit grid, no fixed height anywhere */
   .grid {{
     display:grid;
-    grid-template-columns:repeat(auto-fit, minmax(220px, 1fr));
+    grid-template-columns:repeat(auto-fit, minmax(min(220px, 100%), 1fr));
     gap:10px;
     overflow:visible;
   }}
@@ -392,7 +392,7 @@ def build_sentence_html(idx, sentence, tags, palette, urdu_sentence, urdu_words)
       if (!block) return;
       /* offsetHeight = true rendered height, NOT affected by iframe clipping.
          getBoundingClientRect().bottom was returning the clipped height — wrong. */
-      const h = block.offsetTop + block.offsetHeight + 50;
+      const h = block.offsetTop + block.offsetHeight + 20;
       window.parent.postMessage({{
         isStreamlitMessage: true,
         type: "streamlit:setFrameHeight",
@@ -413,10 +413,11 @@ def build_sentence_html(idx, sentence, tags, palette, urdu_sentence, urdu_words)
 
 # ── FIX 4: ACCURATE INITIAL HEIGHT (3-col assumption on wide layout) ─────────
 def iframe_height(word_count):
-    # Wide layout fits ~3 cards per row. Each card ~160px (with urdu row).
-    # header 60 + sentence 50 + urdu 70 + rows*160 + buffer 60
-    rows = math.ceil(word_count / 3)
-    return 60 + 50 + 70 + rows * 160 + 60
+    # Use WORST CASE = 1 column (mobile screen).
+    # Each card ~200px tall (title + role + what is + urdu row).
+    # JS will measure true height via offsetHeight and SHRINK this on desktop.
+    # This guarantees zero cropping on any device or sentence length.
+    return 60 + 50 + 70 + word_count * 200 + 80
 
 
 # ── INPUT SECTION ─────────────────────────────────────────────────────────────
