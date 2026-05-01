@@ -515,7 +515,7 @@ if analyze:
         h          = iframe_height(len(real))
         block_html = build_sentence_html(i, sentence, tags, PALETTE,
                                          urdu_sentence, urdu_words)
-        # scrolling=False — no scrollbar gap; JS handles expansion
+        # scrolling=True — no scrollbar gap; JS handles expansion
         components.html(block_html, height=h, scrolling=False)
 
         for w, t in real:
