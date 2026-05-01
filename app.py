@@ -20,18 +20,17 @@ st.set_page_config(
     initial_sidebar_state="collapsed"
 )
 
-# ── SESSION STATE (must be before any widget) ────────────────────────────────
+# ── SESSION STATE ────────────────────────────────────────────────────────────
 if 'input_text' not in st.session_state:
     st.session_state.input_text = ''
 if 'voice_msg' not in st.session_state:
-    st.session_state.voice_msg  = None   # ('success'|'error', message_text)
+    st.session_state.voice_msg  = None
 
 # ── GLOBAL CSS ───────────────────────────────────────────────────────────────
 st.markdown("""
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap');
 
-/* hide Streamlit chrome */
 #MainMenu, header, footer,
 [data-testid="stToolbar"],
 [data-testid="stDecoration"],
@@ -47,7 +46,6 @@ html, body, [class*="css"], .stApp {
     padding-top:1.4rem!important;
     margin:auto;
 }
-
 .big-title {
     font-size:40px; font-weight:900; text-align:center;
     background:linear-gradient(90deg,#009688,#26c6a2,#0288d1,#7b1fa2);
@@ -62,23 +60,18 @@ html, body, [class*="css"], .stApp {
     background:#fff!important; color:#1a1a2e!important;
     border:2px solid #80cbc4!important; border-radius:12px!important;
     font-size:15px!important; font-family:'Nunito',sans-serif!important;
-    caret-color: #000 !important;
-
-
-        border:1px solid #b2dfdb !important;
-    box-shadow:0 2px 8px rgba(0,0,0,0.05) !important;
-
-    padding:12px !important;
-    transition:all 0.2s ease-in-out !important;
+    caret-color:#000!important;
+    box-shadow:0 2px 8px rgba(0,0,0,0.05)!important;
+    padding:12px!important;
+    transition:all 0.2s ease-in-out!important;
 }
 .stTextArea textarea:focus {
-    border:1px solid #009688 !important;
-    box-shadow:0 0 0 2px rgba(0,150,136,0.2) !important;
-    outline:none !important;
+    border:1px solid #009688!important;
+    box-shadow:0 0 0 2px rgba(0,150,136,0.2)!important;
+    outline:none!important;
 }
 .stTextArea label { color:#00695c!important; font-weight:700!important; font-size:14px!important; }
 .stAudioInput label { color:#00695c!important; font-weight:700!important; }
-
 .stButton>button {
     background:linear-gradient(90deg,#009688,#26a69a)!important;
     color:#fff!important; font-size:16px!important; font-weight:800!important;
@@ -88,7 +81,6 @@ html, body, [class*="css"], .stApp {
     width:100%; transition:transform .15s;
 }
 .stButton>button:hover { transform:scale(1.03)!important; }
-
 .stat-card {
     background:linear-gradient(135deg,#b2dfdb,#e0f7fa);
     border:1.5px solid #80cbc4; border-radius:14px;
@@ -96,7 +88,6 @@ html, body, [class*="css"], .stApp {
 }
 .stat-num { font-size:28px; font-weight:900; color:#00695c; }
 .stat-lbl { font-size:12px; color:#004d40; font-weight:600; }
-
 .audio-panel {
     background:linear-gradient(135deg,#b2dfdb,#e0f7fa);
     border:2px solid #80cbc4; border-radius:16px;
@@ -201,8 +192,10 @@ def transcribe_audio(audio_bytes):
         try: os.unlink(tmp_path)
         except: pass
 
+# ════════════════════════════════════════════════════════════════════════════
+#  CHANGED: build_sentence_html — dynamic height JS + Urdu font/spacing
+# ════════════════════════════════════════════════════════════════════════════
 def build_sentence_html(idx, sentence, tags, palette, urdu_sentence, urdu_words):
-    """Fully self-contained HTML for one sentence block, rendered in an iframe."""
     border, g1, g2, badge_bg = palette[idx % len(palette)]
     real_pairs = [(w,t) for w,t in tags if w not in PUNCT]
 
@@ -218,7 +211,7 @@ def build_sentence_html(idx, sentence, tags, palette, urdu_sentence, urdu_words)
           </div>
           <div class="wdetail"><span class="lbl">Role:</span> {html.escape(word_role)}</div>
           <div class="wdetail"><span class="lbl">What is a {html.escape(pos_name)}?</span> {html.escape(pos_desc)}</div>
-          <div class="wdetail"><span class="lbl">Urdu:</span> {html.escape(urdu_word)}</div>
+          <div class="wdetail urdu-word"><span class="lbl">اردو:</span> <span class="urdu-text">{html.escape(urdu_word)}</span></div>
         </div>"""
 
     return f"""<!DOCTYPE html>
@@ -226,10 +219,11 @@ def build_sentence_html(idx, sentence, tags, palette, urdu_sentence, urdu_words)
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<!-- Nunito for English, Noto Nastaliq Urdu for Urdu text -->
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Noto+Nastaliq+Urdu:wght@400;600;700&display=swap" rel="stylesheet">
 <style>
-  *  {{ box-sizing:border-box; margin:0; padding:0; font-family:'Nunito',sans-serif; }}
-  body {{ background:transparent; padding:4px 2px 8px 2px; }}
+  * {{ box-sizing:border-box; margin:0; padding:0; font-family:'Nunito',sans-serif; }}
+  body {{ background:transparent; padding:4px 2px 12px 2px; }}
 
   .block {{
     background:linear-gradient(135deg,{g1},{g2});
@@ -246,12 +240,43 @@ def build_sentence_html(idx, sentence, tags, palette, urdu_sentence, urdu_words)
     border-radius:20px; padding:3px 12px; white-space:nowrap;
   }}
   .sent-wcount {{ font-size:12px; color:#555; font-weight:600; }}
+
+  /* English sentence box */
   .sent-text {{
     font-size:15px; font-style:italic; color:#263238;
-    background:rgba(255,255,255,.5);
-    border-radius:10px; padding:8px 14px;
-    margin-bottom:12px; line-height:1.5; word-break:break-word;
+    background:rgba(255,255,255,.55);
+    border-radius:10px; padding:9px 14px;
+    line-height:1.6; word-break:break-word;
+    margin-bottom:0;                   /* no gap — urdu box sits right below */
   }}
+
+  /* Urdu translation box — visually connected, slight separator */
+  .sent-urdu {{
+    background:rgba(255,255,255,.38);
+    border-radius:0 0 10px 10px;       /* round only bottom corners */
+    padding:8px 14px 10px 14px;
+    margin-bottom:14px;
+    border-top:1px dashed rgba(0,0,0,.12);
+    text-align:right;                  /* RTL alignment */
+    direction:rtl;
+  }}
+  .urdu-label {{
+    font-size:11px; font-weight:700; color:#555;
+    font-family:'Nunito',sans-serif;
+    direction:ltr; display:inline-block; margin-left:6px;
+    vertical-align:middle;
+  }}
+  .urdu-sentence-text {{
+    font-family:'Noto Nastaliq Urdu', serif;
+    font-size:17px;                    /* slightly larger — Nastaliq reads better bigger */
+    font-weight:600;
+    color:#1a1a2e;
+    line-height:2;                     /* Nastaliq needs tall line-height for diacritics */
+    display:block;
+    margin-top:2px;
+  }}
+
+  /* Word cards grid */
   .grid {{
     display:grid;
     grid-template-columns:repeat(auto-fill,minmax(220px,1fr));
@@ -267,15 +292,26 @@ def build_sentence_html(idx, sentence, tags, palette, urdu_sentence, urdu_words)
     display:flex; align-items:flex-start;
     flex-wrap:wrap; gap:6px; margin-bottom:5px;
   }}
-  .wtitle  {{ font-size:19px; font-weight:900; color:#1a1a2e; word-break:break-word; }}
-  .badge   {{
+  .wtitle {{ font-size:19px; font-weight:900; color:#1a1a2e; word-break:break-word; }}
+  .badge  {{
     background:{badge_bg}; color:#fff;
     border-radius:20px; padding:2px 10px;
-    font-size:11px; font-weight:700; white-space:nowrap;
-    margin-top:3px;
+    font-size:11px; font-weight:700; white-space:nowrap; margin-top:3px;
   }}
-  .wdetail {{ font-size:12px; color:#455a64; line-height:1.55; margin-top:3px; }}
-  .lbl     {{ font-weight:800; color:#263238; }}
+  .wdetail {{ font-size:12px; color:#455a64; line-height:1.6; margin-top:3px; }}
+  .lbl {{ font-weight:800; color:#263238; }}
+
+  /* Urdu word inside card */
+  .urdu-word {{
+    direction:rtl; text-align:right;
+    border-top:1px dashed rgba(0,0,0,.1);
+    margin-top:5px; padding-top:4px;
+  }}
+  .urdu-text {{
+    font-family:'Noto Nastaliq Urdu', serif;
+    font-size:15px; font-weight:600;
+    color:#1a1a2e; line-height:2;
+  }}
 </style>
 </head>
 <body>
@@ -284,38 +320,69 @@ def build_sentence_html(idx, sentence, tags, palette, urdu_sentence, urdu_words)
       <span class="sent-num">Sentence {idx+1}</span>
       <span class="sent-wcount">{len(real_pairs)} words</span>
     </div>
-    <div class="sent-text">{html.escape(sentence)}</div> <div class="sent-urdu">اردو: {html.escape(urdu_sentence)}</div>
+
+    <!-- English sentence -->
+    <div class="sent-text">{html.escape(sentence)}</div>
+
+    <!-- Urdu translation — separated by dashed line, right-aligned Nastaliq -->
+    <div class="sent-urdu">
+      <span class="urdu-label">Translation:</span>
+      <span class="urdu-sentence-text">{html.escape(urdu_sentence)}</span>
+    </div>
+
     <div class="grid">{cards}</div>
   </div>
+
   <script>
-    /* Auto-report true height to Streamlit so the iframe never clips */
+    /*
+      Dynamic height reporter.
+      Fires on load + on every DOM resize so the Streamlit iframe
+      always matches the true rendered height — no clipping, no scrollbar.
+      Multiple timeouts ensure fonts (Nastaliq) are fully loaded first.
+    */
     function reportHeight() {{
-      const h = document.documentElement.scrollHeight + 20;
-      window.parent.postMessage({{isStreamlitMessage:true, type:'streamlit:setFrameHeight', height:h}}, '*');
+      const h = document.body.scrollHeight + 24;
+      window.parent.postMessage(
+        {{ isStreamlitMessage: true, type: 'streamlit:setFrameHeight', height: h }},
+        '*'
+      );
     }}
-    window.addEventListener('load', reportHeight);
+
+    // Fire immediately, then again after fonts settle
+    reportHeight();
+    setTimeout(reportHeight, 200);
+    setTimeout(reportHeight, 600);
+    setTimeout(reportHeight, 1200);
+
+    // Keep watching for any late layout shifts
     new ResizeObserver(reportHeight).observe(document.body);
+    window.addEventListener('load', reportHeight);
   </script>
 </body>
 </html>"""
 
+# ════════════════════════════════════════════════════════════════════════════
+#  CHANGED: iframe_height — more generous formula accounting for Urdu row
+# ════════════════════════════════════════════════════════════════════════════
 def iframe_height(word_count):
     """
-    Generous fallback height used while JS auto-resize kicks in.
-    Assumes 2-column grid, each card ~115px tall.
-    Header (~60px) + sentence text (~70px) + grid rows + bottom buffer (50px).
+    Fallback height (px) used before JS auto-resize kicks in.
+    Layout:
+      header  ~55px
+      English sentence text  ~55px
+      Urdu sentence block    ~70px   ← extra for Nastaliq line-height
+      grid rows (2 cols, each card ~130px tall now with urdu row)
+      bottom buffer  60px
     """
     rows = math.ceil(word_count / 2)
-    return 60 + 70 + rows * 120 + 50
+    return 55 + 55 + 70 + rows * 135 + 60
+
 
 # ── INPUT SECTION ─────────────────────────────────────────────────────────────
-
-# Handle new voice input BEFORE widget is created
 if 'new_input' in st.session_state:
     st.session_state.input_text = st.session_state['new_input']
     del st.session_state['new_input']
 
-# Show any voice feedback from previous run BEFORE the text area
 if st.session_state.voice_msg:
     kind, msg = st.session_state.voice_msg
     if kind == 'success':
@@ -333,23 +400,17 @@ text_input = st.text_area(
 components.html("""
 <script>
 const textarea = window.parent.document.querySelector('textarea');
-
 function autoResize() {
     textarea.style.height = "auto";
     textarea.style.height = textarea.scrollHeight + "px";
 }
-
-// Run once
 autoResize();
-
-// Run on typing
 textarea.addEventListener("input", autoResize);
 </script>
 """, height=0)
 
 st.markdown("**Or record your voice:**")
 
-# Store last processed audio
 if 'last_audio' not in st.session_state:
     st.session_state.last_audio = None
 
@@ -357,34 +418,23 @@ audio_data = st.audio_input("Click the mic to record")
 
 if audio_data is not None:
     audio_bytes = audio_data.read()
-
-    # Process ONLY new audio
     if audio_bytes != st.session_state.last_audio:
         st.session_state.last_audio = audio_bytes
-
         with st.spinner("Transcribing..."):
             spoken = transcribe_audio(audio_bytes)
-
         if spoken:
             st.session_state['new_input'] = spoken
             st.session_state.voice_msg = ('success', spoken)
         else:
-            st.session_state.voice_msg = (
-                'error',
-                "Could not understand the audio — please try again."
-            )
-
-        # 🔥 IMPORTANT: force update immediately
+            st.session_state.voice_msg = ('error', "Could not understand the audio — please try again.")
         st.rerun()
 
 analyze = False
 if st.button("Analyze My Sentences!", use_container_width=True):
     analyze = True
 
-
 # ── ANALYSIS ─────────────────────────────────────────────────────────────────
 if analyze:
-    # Read from session state (covers both typed and voice-populated text)
     raw_text = st.session_state.get('input_text', '').strip()
     if not raw_text:
         st.warning("Please enter or record a sentence first!")
@@ -394,7 +444,6 @@ if analyze:
     all_tokens = tokenize_words(raw_text)
     real_words = [w for w in all_tokens if w not in PUNCT]
 
-    # Stats
     st.markdown("### Quick Stats")
     c1, c2, c3 = st.columns(3)
     avg = round(len(real_words) / max(len(sentences), 1), 1)
@@ -418,20 +467,18 @@ if analyze:
         real  = [(w,t) for w,t in tags if w not in PUNCT]
         urdu_words = [GoogleTranslator(source='auto', target='ur').translate(w) for w, t in real]
 
-        if not real:          # skip lone-punctuation fragments
+        if not real:
             continue
 
         h          = iframe_height(len(real))
         block_html = build_sentence_html(i, sentence, tags, PALETTE, urdu_sentence, urdu_words)
-        # scrolling=True is the safety net; JS auto-resize removes the scroll bar
-        components.html(block_html, height=h, scrolling=True)
+        components.html(block_html, height=h, scrolling=False)
 
         for w, t in real:
             pos_name, _ = explain_pos(t)
             narration  += f"{w} is a {pos_name}. "
         narration += f" End of sentence {i+1}. "
 
-    # Audio
     st.markdown("### Listen to the Full Explanation")
     st.markdown(
         '<div class="audio-panel">Press play to hear a complete audio explanation of all your sentences.</div>',
