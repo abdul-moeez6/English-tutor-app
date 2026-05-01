@@ -116,10 +116,6 @@ hr { border-color:#b2dfdb!important; }
     color-scheme: light !important;
 }
 
-/* Fix small black edges */
-audio {
-    background: #ffffff !important;
-}
 </style>
 """, unsafe_allow_html=True)
 
