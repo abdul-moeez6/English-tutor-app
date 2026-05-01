@@ -392,7 +392,7 @@ def build_sentence_html(idx, sentence, tags, palette, urdu_sentence, urdu_words)
       if (!block) return;
       /* offsetHeight = true rendered height, NOT affected by iframe clipping.
          getBoundingClientRect().bottom was returning the clipped height — wrong. */
-      const h = block.offsetTop + block.offsetHeight + 20;
+      const h = block.offsetTop + block.offsetHeight + 50;
       window.parent.postMessage({{
         isStreamlitMessage: true,
         type: "streamlit:setFrameHeight",
