@@ -71,7 +71,6 @@ html, body, [class*="css"], .stApp {
     transition:all 0.2s ease-in-out !important;
 }
 
-.stTextArea label { color:#00695c!important; font-weight:700!important; font-size:14px!important; }
 .stAudioInput label { color:#00695c!important; font-weight:700!important; }
 
 .stButton>button {
