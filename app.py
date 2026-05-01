@@ -117,7 +117,24 @@ hr { border-color:#b2dfdb!important; }
 
 </style>
 """, unsafe_allow_html=True)
+# ── AVATAR DISPLAY ───────────────────────
+def show_avatar():
+    avatar_url = "https://mangoanimate.com/blog/wp-content/uploads/2024/08/AI-talking-avatar.gif"
 
+    st.markdown(f"""
+    <div style="display:flex; justify-content:center; margin-top:20px;">
+        <img src="{avatar_url}" 
+             style="
+             width:220px;
+             height:220px;
+             object-fit:cover;
+             border-radius:20px;
+             box-shadow:0 8px 20px rgba(0,0,0,0.2);
+             border: 3px solid {'#009688' if st.session_state.is_talking else '#ccc'};
+             transition: all 0.3s ease;
+             ">
+    </div>
+    """, unsafe_allow_html=True)
 # ── TITLE ────────────────────────────────────────────────────────────────────
 st.markdown('<div class="big-title">My English Tutor</div>', unsafe_allow_html=True)
 st.markdown('<div class="subtitle">Learn every word and sentence — the fun, easy way!</div>', unsafe_allow_html=True)
@@ -232,25 +249,7 @@ def build_sentence_html(idx, sentence, tags, palette):
         </div>"""
 
     return f"""
-    # ── AVATAR DISPLAY ───────────────────────
-def show_avatar():
-    avatar_url = "https://mangoanimate.com/blog/wp-content/uploads/2024/08/AI-talking-avatar.gif"
-
-    st.markdown(f"""
-    <div style="display:flex; justify-content:center; margin-top:20px;">
-        <img src="{avatar_url}" 
-             style="
-             width:220px;
-             height:220px;
-             object-fit:cover;
-             border-radius:20px;
-             box-shadow:0 8px 20px rgba(0,0,0,0.2);
-             border: 3px solid {'#009688' if st.session_state.is_talking else '#ccc'};
-             transition: all 0.3s ease;
-             ">
-    </div>
-    """, unsafe_allow_html=True)
-    
+        
     <!DOCTYPE html>
 <html>
 <head>
