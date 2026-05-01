@@ -157,7 +157,10 @@ PALETTE = [
     ('#ab47bc','#ede7f6','#faf5ff','#7b1fa2'),
     ('#ffa726','#fff3e0','#fffde7','#e65100'),
 ]
-
+st.markdown(
+    "<meta name='color-scheme' content='light'>",
+    unsafe_allow_html=True
+)
 # ── HELPERS ──────────────────────────────────────────────────────────────────
 def tokenize_sentences(text):  return sent_tokenize(text)
 def tokenize_words(text):      return word_tokenize(text)
