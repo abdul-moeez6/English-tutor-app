@@ -499,7 +499,7 @@ if analyze:
         if not real:
             continue
 
-       block_html = build_sentence_html(i, sentence, tags, PALETTE, urdu_sentence, urdu_words)
+        block_html = build_sentence_html(i, sentence, tags, PALETTE, urdu_sentence, urdu_words)
         
         # Dynamic height: base + per-card rows (mobile-safe)
         base_h = 380
