@@ -390,8 +390,9 @@ def build_sentence_html(idx, sentence, tags, palette, urdu_sentence, urdu_words)
     function reportHeight() {{
       const block = document.querySelector('.block');
       if (!block) return;
-      const rect = block.getBoundingClientRect();
-      const h = Math.ceil(rect.bottom) + 20;
+      /* offsetHeight = true rendered height, NOT affected by iframe clipping.
+         getBoundingClientRect().bottom was returning the clipped height — wrong. */
+      const h = block.offsetTop + block.offsetHeight + 20;
       window.parent.postMessage({{
         isStreamlitMessage: true,
         type: "streamlit:setFrameHeight",
@@ -515,7 +516,7 @@ if analyze:
         h          = iframe_height(len(real))
         block_html = build_sentence_html(i, sentence, tags, PALETTE,
                                          urdu_sentence, urdu_words)
-        # scrolling=True — no scrollbar gap; JS handles expansion
+        # scrolling=False — no scrollbar gap; JS handles expansion
         components.html(block_html, height=h, scrolling=False)
 
         for w, t in real:
