@@ -388,7 +388,10 @@ def build_sentence_html(idx, sentence, tags, palette, urdu_sentence, urdu_words)
 
   <script>
     function reportHeight() {{
-      const h = document.documentElement.scrollHeight;
+      const block = document.querySelector('.block');
+      if (!block) return;
+      const rect = block.getBoundingClientRect();
+      const h = Math.ceil(rect.bottom) + 20;
       window.parent.postMessage({{
         isStreamlitMessage: true,
         type: "streamlit:setFrameHeight",
@@ -398,9 +401,10 @@ def build_sentence_html(idx, sentence, tags, palette, urdu_sentence, urdu_words)
     setTimeout(reportHeight, 50);
     setTimeout(reportHeight, 250);
     setTimeout(reportHeight, 600);
+    setTimeout(reportHeight, 1200);
     window.addEventListener("load", reportHeight);
     window.addEventListener("resize", reportHeight);
-    new ResizeObserver(reportHeight).observe(document.body);
+    new ResizeObserver(reportHeight).observe(document.querySelector('.block') || document.body);
   </script>
 </body>
 </html>"""
@@ -408,13 +412,10 @@ def build_sentence_html(idx, sentence, tags, palette, urdu_sentence, urdu_words)
 
 # ── FIX 4: ACCURATE INITIAL HEIGHT (3-col assumption on wide layout) ─────────
 def iframe_height(word_count):
-    """
-    Starting height before JS kicks in.
-    Wide layout fits ~3 cards per row (minmax 210px on ~900px container).
-    header 55 + sentence 45 + urdu bar 55 + rows*(card 120px) + buffer 30
-    """
+    # Wide layout fits ~3 cards per row. Each card ~160px (with urdu row).
+    # header 60 + sentence 50 + urdu 70 + rows*160 + buffer 60
     rows = math.ceil(word_count / 3)
-    return 55 + 45 + 55 + rows * 120 + 30
+    return 60 + 50 + 70 + rows * 160 + 60
 
 
 # ── INPUT SECTION ─────────────────────────────────────────────────────────────
