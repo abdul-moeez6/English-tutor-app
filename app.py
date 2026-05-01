@@ -260,7 +260,7 @@ text_input = st.text_area(
     placeholder="E.g.: The cat sat on the mat. Dogs love to play outside!"
 )
 
-st.markdown("**Or record your voice (works in browser via ngrok):**")
+st.markdown("**Or record your voice:**")
 audio_data = st.audio_input("Click the mic to record")
 
 if audio_data is not None:
