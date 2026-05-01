@@ -70,11 +70,7 @@ html, body, [class*="css"], .stApp {
     padding:12px !important;
     transition:all 0.2s ease-in-out !important;
 }
-.stTextArea textarea:focus {
-    border:1px solid #009688 !important;
-    box-shadow:0 0 0 2px rgba(0,150,136,0.2) !important;
-    outline:none !important;
-}
+
 .stTextArea label { color:#00695c!important; font-weight:700!important; font-size:14px!important; }
 .stAudioInput label { color:#00695c!important; font-weight:700!important; }
 
