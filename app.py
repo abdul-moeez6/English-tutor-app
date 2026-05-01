@@ -18,7 +18,6 @@ st.set_page_config(
     page_icon="🎓",
     initial_sidebar_state="collapsed"
 )
-st.markdown("<meta name='color-scheme' content='light'>", unsafe_allow_html=True)
 
 # ── SESSION STATE (must be before any widget) ────────────────────────────────
 if 'input_text' not in st.session_state:
