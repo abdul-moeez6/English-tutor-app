@@ -4,7 +4,7 @@ import nltk
 from nltk.tokenize import word_tokenize, sent_tokenize
 from nltk import pos_tag
 from gtts import gTTS
-import os, io, tempfile, html, math
+import os, io, tempfile, html
 import speech_recognition as sr
 from deep_translator import GoogleTranslator
 
@@ -334,48 +334,21 @@ def build_sentence_html(idx, sentence, tags, palette, urdu_sentence, urdu_words)
   </div>
 
   <script>
-    /*
-      Dynamic height reporter.
-      Fires on load + on every DOM resize so the Streamlit iframe
-      always matches the true rendered height — no clipping, no scrollbar.
-      Multiple timeouts ensure fonts (Nastaliq) are fully loaded first.
-    */
     function reportHeight() {{
-      const h = document.body.scrollHeight + 24;
-      window.parent.postMessage(
-        {{ isStreamlitMessage: true, type: 'streamlit:setFrameHeight', height: h }},
-        '*'
-      );
+      const h = document.body.scrollHeight + 20;
+      window.parent.postMessage({{
+        isStreamlitMessage: true,
+        type: "streamlit:setFrameHeight",
+        height: h
+      }}, "*");
     }}
 
-    // Fire immediately, then again after fonts settle
-    reportHeight();
-    setTimeout(reportHeight, 200);
-    setTimeout(reportHeight, 600);
-    setTimeout(reportHeight, 1200);
-
-    // Keep watching for any late layout shifts
+    window.addEventListener("load", reportHeight);
+    setTimeout(reportHeight, 100);
     new ResizeObserver(reportHeight).observe(document.body);
-    window.addEventListener('load', reportHeight);
   </script>
 </body>
 </html>"""
-
-# ════════════════════════════════════════════════════════════════════════════
-#  CHANGED: iframe_height — more generous formula accounting for Urdu row
-# ════════════════════════════════════════════════════════════════════════════
-def iframe_height(word_count):
-    """
-    Fallback height (px) used before JS auto-resize kicks in.
-    Layout:
-      header  ~55px
-      English sentence text  ~55px
-      Urdu sentence block    ~70px   ← extra for Nastaliq line-height
-      grid rows (2 cols, each card ~130px tall now with urdu row)
-      bottom buffer  60px
-    """
-    rows = math.ceil(word_count / 2)
-    return 55 + 55 + 70 + rows * 135 + 60
 
 
 # ── INPUT SECTION ─────────────────────────────────────────────────────────────
@@ -470,9 +443,8 @@ if analyze:
         if not real:
             continue
 
-        h          = iframe_height(len(real))
         block_html = build_sentence_html(i, sentence, tags, PALETTE, urdu_sentence, urdu_words)
-        components.html(block_html, height=h, scrolling=False)
+        components.html(block_html, height=100, scrolling=False)
 
         for w, t in real:
             pos_name, _ = explain_pos(t)
