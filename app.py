@@ -253,24 +253,27 @@ def build_sentence_html(idx, sentence, tags, palette, urdu_sentence, urdu_words)
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Noto+Nastaliq+Urdu:wght@400;600;700&display=swap" rel="stylesheet">
 <style>
-  * {{ box-sizing:border-box; margin:0; padding:0; font-family:'Nunito',sans-serif; }}
+  * {{ box-sizing:border-box; margin:0; padding:0; font-family:'Nunito',sans-serif; white-space:normal; word-break:break-word; }}
 
-  /* ── transparent body, tight bottom padding ── */
+  /* ISSUE 2 FIX: overflow visible so nothing clips */
   body {{
     background:transparent;
     padding:2px 2px 6px 2px;
-    overflow:hidden;           /* no body scrollbar */
+    overflow:visible;
+    height:auto;
   }}
 
+  /* ISSUE 2 FIX: block must never clip children */
   .block {{
     background:linear-gradient(135deg,{g1},{g2});
     border-left:5px solid {border};
     border-radius:18px;
     padding:14px 16px 16px 16px;
     box-shadow:0 3px 12px {border}30;
+    overflow:visible;
+    height:auto;
   }}
 
-  /* header row */
   .sent-hdr {{
     display:flex; align-items:center; gap:10px; margin-bottom:8px;
   }}
@@ -281,7 +284,6 @@ def build_sentence_html(idx, sentence, tags, palette, urdu_sentence, urdu_words)
   }}
   .sent-wcount {{ font-size:12px; color:#555; font-weight:600; }}
 
-  /* English sentence */
   .sent-text {{
     font-size:15px; font-style:italic; color:#263238;
     background:rgba(255,255,255,.55);
@@ -291,75 +293,80 @@ def build_sentence_html(idx, sentence, tags, palette, urdu_sentence, urdu_words)
     margin-bottom:0;
   }}
 
-  /* Urdu translation — visually attached below English box, right-aligned */
+  /* ISSUE 1 FIX: Urdu block — proper RTL, right-aligned, connected card */
   .sent-urdu {{
     background:rgba(255,255,255,.35);
     border-radius:0 0 10px 10px;
     border-top:1px dashed rgba(0,0,0,.13);
-    padding:6px 14px 8px 14px;
-    margin-bottom:12px;
-    display:flex;
-    align-items:flex-start;
-    justify-content:flex-end;   /* push content to right */
-    gap:8px;
+    padding:6px 14px 10px 14px;
+    margin-bottom:14px;
     direction:rtl;
+    text-align:right;
   }}
   .urdu-label {{
     font-family:'Nunito',sans-serif;
     font-size:11px; font-weight:700;
     color:#607d8b;
     direction:ltr;
-    white-space:nowrap;
-    margin-top:6px;
+    display:inline-block;
+    margin-left:6px;
+    vertical-align:middle;
   }}
   .urdu-sent-text {{
     font-family:'Noto Nastaliq Urdu', serif;
-    font-size:16px; font-weight:600;
+    font-size:17px; font-weight:600;
     color:#1a1a2e;
-    line-height:2;             /* Nastaliq needs room for diacritics */
+    line-height:2.1;
+    display:block;
     text-align:right;
+    direction:rtl;
   }}
 
-  /* word cards grid */
+  /* ISSUE 2 FIX: auto-fit grid, no fixed height anywhere */
   .grid {{
     display:grid;
-    grid-template-columns:repeat(auto-fill,minmax(210px,1fr));
-    gap:7px;
+    grid-template-columns:repeat(auto-fit, minmax(220px, 1fr));
+    gap:10px;
+    overflow:visible;
   }}
   .wcard {{
     background:rgba(255,255,255,.85);
     border:1.5px solid rgba(0,0,0,.07);
     border-radius:12px;
-    padding:9px 12px;
+    padding:10px 13px;
     word-break:break-word;
+    white-space:normal;
+    height:auto;
+    overflow:visible;
   }}
   .wcard-top {{
     display:flex; align-items:flex-start;
-    flex-wrap:wrap; gap:5px; margin-bottom:4px;
+    flex-wrap:wrap; gap:5px; margin-bottom:5px;
   }}
-  .wtitle {{ font-size:18px; font-weight:900; color:#1a1a2e; }}
+  .wtitle {{ font-size:18px; font-weight:900; color:#1a1a2e; word-break:break-word; white-space:normal; }}
   .badge  {{
     background:{badge_bg}; color:#fff;
     border-radius:20px; padding:2px 9px;
     font-size:11px; font-weight:700;
     white-space:nowrap; margin-top:3px;
   }}
-  .wdetail {{ font-size:12px; color:#455a64; line-height:1.5; margin-top:3px; }}
+  .wdetail {{ font-size:12px; color:#455a64; line-height:1.55; margin-top:4px; white-space:normal; word-break:break-word; }}
   .lbl     {{ font-weight:800; color:#263238; }}
 
-  /* Urdu word inside card */
+  /* ISSUE 1 FIX: Urdu word in card — right-aligned, proper font */
   .urdu-line {{
-    direction:rtl; text-align:right;
+    direction:rtl;
+    text-align:right;
     border-top:1px dashed rgba(0,0,0,.1);
-    margin-top:5px; padding-top:4px;
-    justify-content:flex-end;
-    display:flex; gap:6px; align-items:center;
+    margin-top:6px;
+    padding-top:5px;
   }}
-  .lbl-urdu  {{ font-weight:800; color:#263238; font-size:12px; direction:rtl; }}
+  .lbl-urdu  {{ font-weight:800; color:#263238; font-size:12px; direction:ltr; display:inline-block; margin-left:4px; }}
   .urdu-word-text {{
     font-family:'Noto Nastaliq Urdu', serif;
-    font-size:14px; font-weight:600;
-    color:#1a1a2e; line-height:1.9;
+    font-size:15px; font-weight:600;
+    color:#1a1a2e; line-height:2;
+    display:inline;
   }}
 </style>
 </head>
@@ -373,20 +380,15 @@ def build_sentence_html(idx, sentence, tags, palette, urdu_sentence, urdu_words)
     <div class="sent-text">{html.escape(sentence)}</div>
     <div class="sent-urdu">
       <span class="urdu-sent-text">{html.escape(urdu_sentence)}</span>
-      <span class="urdu-label">:ترجمہ</span>
+      <span class="urdu-label">Translation:</span>
     </div>
 
     <div class="grid">{cards}</div>
   </div>
 
   <script>
-    /* ── FIX 3: DYNAMIC HEIGHT ─────────────────────────────────────────────
-       Fire at 3 different delays so we catch the frame regardless of
-       when Streamlit finishes mounting the iframe.
-       ResizeObserver keeps it live if fonts load late.
-    ──────────────────────────────────────────────────────────────────────── */
     function reportHeight() {{
-      const h = document.body.scrollHeight + 20;
+      const h = document.documentElement.scrollHeight;
       window.parent.postMessage({{
         isStreamlitMessage: true,
         type: "streamlit:setFrameHeight",
