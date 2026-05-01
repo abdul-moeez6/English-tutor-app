@@ -43,6 +43,7 @@ html, body, [class*="css"], .stApp {
 .block-container {
     background:#e8faf6!important;
     max-width:1060px!important;
+    max-height:1060px!important;
     padding-top:1.4rem!important;
     margin:auto;
 }
