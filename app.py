@@ -465,13 +465,14 @@ if analyze:
     )
     with st.spinner("Generating audio..."):
         audio_buf = make_audio(narration)
-    st.audio(audio_buf, format='audio/mp3')
+   
+        st.audio(audio_buf, format='audio/mp3')
 
-# 👇 SHOW AVATAR ONLY WHEN AUDIO IS GENERATED
-st.session_state.is_talking = True
-show_avatar()
-time.sleep(4)
-st.session_state.is_talking = False
+    # 👇 SHOW AVATAR ONLY WHEN AUDIO IS GENERATED
+    st.session_state.is_talking = True
+    show_avatar()
+    time.sleep(4)
+    st.session_state.is_talking = False
 
     st.balloons()
     st.success("Analysis complete! Scroll up to explore each sentence block.")
