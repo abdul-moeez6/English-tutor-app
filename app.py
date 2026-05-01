@@ -7,7 +7,8 @@ from gtts import gTTS
 import os, io, tempfile, html, math
 import speech_recognition as sr
 import time
-
+from openai import OpenAI
+client = OpenAI(api_key=st.secrets["OPENAI_API_KEY"])
 # ── AVATAR STATE ─────────────────────────
 if "is_talking" not in st.session_state:
     st.session_state.is_talking = False
@@ -207,7 +208,19 @@ def explain_word(word, tag):
     if tag == 'TO':             return f'{w} links the verb to what comes next.'
     if tag == 'UH':             return f'{w} is an exclamation that shows emotion.'
     return                             f'{w} supports the overall meaning of the sentence.'
-
+def correct_grammar(text):
+    try:
+        response = client.chat.completions.create(
+            model="gpt-4.1-mini",
+            messages=[
+                {"role": "system", "content": "Fix grammar and spelling mistakes. Keep it simple."},
+                {"role": "user", "content": text}
+            ],
+            temperature=0
+        )
+        return response.choices[0].message.content.strip()
+    except Exception as e:
+        return "Error: " + str(e)
 def make_audio(text):
     buf = io.BytesIO()
     gTTS(text).write_to_fp(buf)
@@ -409,7 +422,21 @@ analyze = False
 if st.button("Analyze My Sentences!", use_container_width=True):
     analyze = True
 
+fix_text = False
+if st.button("Fix Grammar & Spelling", use_container_width=True):
+    fix_text = True
 
+    if fix_text:
+    raw_text = st.session_state.get('input_text', '').strip()
+
+    if not raw_text:
+        st.warning("Please enter text first!")
+    else:
+        with st.spinner("Fixing your sentence..."):
+            corrected = correct_grammar(raw_text)
+
+        st.markdown("### ✨ Corrected Sentence")
+        st.success(corrected)
 # ── ANALYSIS ─────────────────────────────────────────────────────────────────
 if analyze:
     # Read from session state (covers both typed and voice-populated text)
