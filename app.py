@@ -223,96 +223,88 @@ def build_sentence_html(idx, sentence, tags, palette, urdu_sentence, urdu_words)
 <!-- Nunito for English, Noto Nastaliq Urdu for Urdu text -->
 <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Noto+Nastaliq+Urdu:wght@400;600;700&display=swap" rel="stylesheet">
 <style>
-  * {{ box-sizing:border-box; margin:0; padding:0; font-family:'Nunito',sans-serif; }}
-  body {{ background:transparent; padding:4px 2px 12px 2px; }}
+  * { box-sizing:border-box; margin:0; padding:0; font-family:'Nunito',sans-serif; }
+  body { background:transparent; padding:4px 2px 12px 2px; overflow:visible; }
 
-  .block {{
+  .block {
     background:linear-gradient(135deg,{g1},{g2});
     border-left:5px solid {border};
     border-radius:18px; padding:16px 18px;
     box-shadow:0 4px 16px {border}33;
-  }}
-  .sent-hdr {{
+    width:100%; max-width:2000px; overflow:visible;
+  }
+  .sent-hdr {
     display:flex; align-items:center; gap:10px; margin-bottom:10px;
-  }}
-  .sent-num {{
+  }
+  .sent-num {
     background:{border}; color:#fff;
     font-size:12px; font-weight:900;
     border-radius:20px; padding:3px 12px; white-space:nowrap;
-  }}
-  .sent-wcount {{ font-size:12px; color:#555; font-weight:600; }}
+  }
+  .sent-wcount { font-size:12px; color:#555; font-weight:600; }
 
-  /* English sentence box */
-  .sent-text {{
+  .sent-text {
     font-size:15px; font-style:italic; color:#263238;
     background:rgba(255,255,255,.55);
-    border-radius:10px; padding:9px 14px;
+    border-radius:10px 10px 0 0; padding:9px 14px;
     line-height:1.6; word-break:break-word;
-    margin-bottom:0;                   /* no gap — urdu box sits right below */
-  }}
-
-  /* Urdu translation box — visually connected, slight separator */
-  .sent-urdu {{
+  }
+  .sent-urdu {
     background:rgba(255,255,255,.38);
-    border-radius:0 0 10px 10px;       /* round only bottom corners */
+    border-radius:0 0 10px 10px;
     padding:8px 14px 10px 14px;
     margin-bottom:14px;
     border-top:1px dashed rgba(0,0,0,.12);
-    text-align:right;                  /* RTL alignment */
-    direction:rtl;
-  }}
-  .urdu-label {{
+    text-align:right; direction:rtl;
+  }
+  .urdu-label {
     font-size:11px; font-weight:700; color:#555;
     font-family:'Nunito',sans-serif;
-    direction:ltr; display:inline-block; margin-left:6px;
-    vertical-align:middle;
-  }}
-  .urdu-sentence-text {{
+    direction:ltr; display:inline-block; margin-left:6px; vertical-align:middle;
+  }
+  .urdu-sentence-text {
     font-family:'Noto Nastaliq Urdu', serif;
-    font-size:17px;                    /* slightly larger — Nastaliq reads better bigger */
-    font-weight:600;
-    color:#1a1a2e;
-    line-height:2;                     /* Nastaliq needs tall line-height for diacritics */
-    display:block;
-    margin-top:2px;
-  }}
+    font-size:17px; font-weight:600; color:#1a1a2e;
+    line-height:2; display:block; margin-top:2px;
+  }
 
-  /* Word cards grid */
-  .grid {{
+  /* ── MOBILE-SAFE GRID ── */
+  .grid {
     display:grid;
-    grid-template-columns:repeat(auto-fill,minmax(220px,1fr));
+    grid-template-columns: repeat(auto-fill, minmax(min(210px, 100%), 1fr));
     gap:8px;
-  }}
-  .wcard {{
+  }
+
+  .wcard {
     background:rgba(255,255,255,.85);
     border:1.5px solid rgba(0,0,0,.07);
     border-radius:12px; padding:10px 13px;
     word-break:break-word;
-  }}
-  .wcard-top {{
+    /* Let card grow with its content — no fixed height */
+    height:auto; min-height:0;
+  }
+  .wcard-top {
     display:flex; align-items:flex-start;
     flex-wrap:wrap; gap:6px; margin-bottom:5px;
-  }}
-  .wtitle {{ font-size:19px; font-weight:900; color:#1a1a2e; word-break:break-word; }}
-  .badge  {{
+  }
+  .wtitle { font-size:19px; font-weight:900; color:#1a1a2e; word-break:break-word; }
+  .badge {
     background:{badge_bg}; color:#fff;
     border-radius:20px; padding:2px 10px;
     font-size:11px; font-weight:700; white-space:nowrap; margin-top:3px;
-  }}
-  .wdetail {{ font-size:12px; color:#455a64; line-height:1.6; margin-top:3px; }}
-  .lbl {{ font-weight:800; color:#263238; }}
+  }
+  .wdetail { font-size:12px; color:#455a64; line-height:1.6; margin-top:3px; }
+  .lbl { font-weight:800; color:#263238; }
 
-  /* Urdu word inside card */
-  .urdu-word {{
+  .urdu-word {
     direction:rtl; text-align:right;
     border-top:1px dashed rgba(0,0,0,.1);
     margin-top:5px; padding-top:4px;
-  }}
-  .urdu-text {{
+  }
+  .urdu-text {
     font-family:'Noto Nastaliq Urdu', serif;
-    font-size:15px; font-weight:600;
-    color:#1a1a2e; line-height:2;
-  }}
+    font-size:15px; font-weight:600; color:#1a1a2e; line-height:2;
+  }
 </style>
 </head>
 <body>
@@ -335,21 +327,21 @@ def build_sentence_html(idx, sentence, tags, palette, urdu_sentence, urdu_words)
   </div>
 
   <script>
-    function reportHeight() {{
-      const h = document.body.scrollHeight + 40;
-      window.parent.postMessage({{
-        isStreamlitMessage: true,
-        type: "streamlit:setFrameHeight",
-        height: h
-      }}, "*");
-    }}
-    setTimeout(reportHeight, 50);
-    setTimeout(reportHeight, 200);
-    setTimeout(reportHeight, 500);
-    window.addEventListener("load", reportHeight);
-    window.addEventListener("resize", reportHeight);
-    new ResizeObserver(reportHeight).observe(document.body);
-  </script>
+  function reportHeight() {
+    const h = Math.min(2000, document.body.scrollHeight + 60);
+    window.parent.postMessage({
+      isStreamlitMessage: true,
+      type: "streamlit:setFrameHeight",
+      height: h
+    }, "*");
+  }
+  // Fire immediately and at multiple delays to catch font/image load latency
+  reportHeight();
+  [50, 150, 300, 600, 1200].forEach(ms => setTimeout(reportHeight, ms));
+  window.addEventListener("load", reportHeight);
+  window.addEventListener("resize", reportHeight);
+  new ResizeObserver(reportHeight).observe(document.body);
+</script>
 </body>
 </html>"""
 
@@ -446,8 +438,15 @@ if analyze:
         if not real:
             continue
 
-        block_html = build_sentence_html(i, sentence, tags, PALETTE, urdu_sentence, urdu_words)
-        components.html(block_html, height=600, scrolling=False)
+       block_html = build_sentence_html(i, sentence, tags, PALETTE, urdu_sentence, urdu_words)
+        
+        # Dynamic height: base + per-card rows (mobile-safe)
+        base_h = 380
+        card_rows_mobile = len(real)
+        card_h = 175
+        initial_h = min(2000, base_h + card_rows_mobile * card_h)
+        
+        components.html(block_html, height=initial_h, scrolling=False)
 
         for w, t in real:
             pos_name, _ = explain_pos(t)
