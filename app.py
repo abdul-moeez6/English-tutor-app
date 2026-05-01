@@ -6,7 +6,12 @@ from nltk import pos_tag
 from gtts import gTTS
 import os, io, tempfile, html, math
 import speech_recognition as sr
+import time
 
+# ── AVATAR STATE ─────────────────────────
+if "is_talking" not in st.session_state:
+    st.session_state.is_talking = False
+    
 # ── NLTK ────────────────────────────────────────────────────────────────────
 for pkg in ['punkt','punkt_tab','averaged_perceptron_tagger','averaged_perceptron_tagger_eng']:
     nltk.download(pkg, quiet=True)
@@ -118,6 +123,7 @@ st.markdown('<div class="big-title">My English Tutor</div>', unsafe_allow_html=T
 st.markdown('<div class="subtitle">Learn every word and sentence — the fun, easy way!</div>', unsafe_allow_html=True)
 st.markdown("---")
 
+show_avatar() 
 # ── POS ──────────────────────────────────────────────────────────────────────
 POS = {
     'NN':  ('Noun',               'Names a person, place, thing, or idea.'),
@@ -225,7 +231,27 @@ def build_sentence_html(idx, sentence, tags, palette):
           <div class="wdetail"><span class="lbl">What is a {html.escape(pos_name)}?</span> {html.escape(pos_desc)}</div>
         </div>"""
 
-    return f"""<!DOCTYPE html>
+    return f"""
+    # ── AVATAR DISPLAY ───────────────────────
+def show_avatar():
+    avatar_url = "https://mangoanimate.com/blog/wp-content/uploads/2024/08/AI-talking-avatar.gif"
+
+    st.markdown(f"""
+    <div style="display:flex; justify-content:center; margin-top:20px;">
+        <img src="{avatar_url}" 
+             style="
+             width:220px;
+             height:220px;
+             object-fit:cover;
+             border-radius:20px;
+             box-shadow:0 8px 20px rgba(0,0,0,0.2);
+             border: 3px solid {'#009688' if st.session_state.is_talking else '#ccc'};
+             transition: all 0.3s ease;
+             ">
+    </div>
+    """, unsafe_allow_html=True)
+    
+    <!DOCTYPE html>
 <html>
 <head>
 <meta charset="utf-8">
