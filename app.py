@@ -18,6 +18,7 @@ st.set_page_config(
     page_icon="🎓",
     initial_sidebar_state="collapsed"
 )
+st.markdown("<meta name='color-scheme' content='light'>", unsafe_allow_html=True)
 
 # ── SESSION STATE (must be before any widget) ────────────────────────────────
 if 'input_text' not in st.session_state:
@@ -104,6 +105,21 @@ html, body, [class*="css"], .stApp {
 }
 hr { border-color:#b2dfdb!important; }
 .stAlert { border-radius:12px!important; }
+/* Fix voice recorder black issue */
+[data-testid="stAudioInput"],
+[data-testid="stAudioInput"] > div {
+    background: #ffffff !important;
+}
+
+[data-testid="stAudioInput"] * {
+    color: #000000 !important;
+    color-scheme: light !important;
+}
+
+/* Fix small black edges */
+audio {
+    background: #ffffff !important;
+}
 </style>
 """, unsafe_allow_html=True)
 
