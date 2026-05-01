@@ -6,6 +6,7 @@ from nltk import pos_tag
 from gtts import gTTS
 import os, io, tempfile, html, math
 import speech_recognition as sr
+from deep_translator import GoogleTranslator
 
 # ── NLTK ────────────────────────────────────────────────────────────────────
 for pkg in ['punkt','punkt_tab','averaged_perceptron_tagger','averaged_perceptron_tagger_eng']:
@@ -200,13 +201,13 @@ def transcribe_audio(audio_bytes):
         try: os.unlink(tmp_path)
         except: pass
 
-def build_sentence_html(idx, sentence, tags, palette):
+def build_sentence_html(idx, sentence, tags, palette, urdu_sentence, urdu_words):
     """Fully self-contained HTML for one sentence block, rendered in an iframe."""
     border, g1, g2, badge_bg = palette[idx % len(palette)]
     real_pairs = [(w,t) for w,t in tags if w not in PUNCT]
 
     cards = ""
-    for word, tag in real_pairs:
+    for (word, tag), urdu_word in zip(real_pairs, urdu_words):
         pos_name, pos_desc = explain_pos(tag)
         word_role          = explain_word(word, tag)
         cards += f"""
@@ -217,6 +218,7 @@ def build_sentence_html(idx, sentence, tags, palette):
           </div>
           <div class="wdetail"><span class="lbl">Role:</span> {html.escape(word_role)}</div>
           <div class="wdetail"><span class="lbl">What is a {html.escape(pos_name)}?</span> {html.escape(pos_desc)}</div>
+          <div class="wdetail"><span class="lbl">Urdu:</span> {html.escape(urdu_word)}</div>
         </div>"""
 
     return f"""<!DOCTYPE html>
@@ -282,7 +284,7 @@ def build_sentence_html(idx, sentence, tags, palette):
       <span class="sent-num">Sentence {idx+1}</span>
       <span class="sent-wcount">{len(real_pairs)} words</span>
     </div>
-    <div class="sent-text">{html.escape(sentence)}</div>
+    <div class="sent-text">{html.escape(sentence)}</div> <div class="sent-urdu">اردو: {html.escape(urdu_sentence)}</div>
     <div class="grid">{cards}</div>
   </div>
   <script>
@@ -410,15 +412,17 @@ if analyze:
 
     narration = ""
     for i, sentence in enumerate(sentences):
+        urdu_sentence = GoogleTranslator(source='auto', target='ur').translate(sentence)
         words = tokenize_words(sentence)
         tags  = get_pos_tags(words)
         real  = [(w,t) for w,t in tags if w not in PUNCT]
+        urdu_words = [GoogleTranslator(source='auto', target='ur').translate(w) for w, t in real]
 
         if not real:          # skip lone-punctuation fragments
             continue
 
         h          = iframe_height(len(real))
-        block_html = build_sentence_html(i, sentence, tags, PALETTE)
+        block_html = build_sentence_html(i, sentence, tags, PALETTE, urdu_sentence, urdu_words)
         # scrolling=True is the safety net; JS auto-resize removes the scroll bar
         components.html(block_html, height=h, scrolling=True)
 
