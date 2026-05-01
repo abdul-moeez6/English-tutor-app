@@ -140,7 +140,6 @@ st.markdown('<div class="big-title">My English Tutor</div>', unsafe_allow_html=T
 st.markdown('<div class="subtitle">Learn every word and sentence — the fun, easy way!</div>', unsafe_allow_html=True)
 st.markdown("---")
 
-show_avatar() 
 # ── POS ──────────────────────────────────────────────────────────────────────
 POS = {
     'NN':  ('Noun',               'Names a person, place, thing, or idea.'),
@@ -467,6 +466,12 @@ if analyze:
     with st.spinner("Generating audio..."):
         audio_buf = make_audio(narration)
     st.audio(audio_buf, format='audio/mp3')
+
+# 👇 SHOW AVATAR ONLY WHEN AUDIO IS GENERATED
+st.session_state.is_talking = True
+show_avatar()
+time.sleep(4)
+st.session_state.is_talking = False
 
     st.balloons()
     st.success("Analysis complete! Scroll up to explore each sentence block.")
